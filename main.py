@@ -42,7 +42,8 @@ def handle_order(store):
         store (Store): An instance of the Store class with available products.
     """
     shopping_list = []
-    print("\nEnter products and quantities to order (e.g., 'MacBook Air M2, 1'). Type 'done' when finished.")
+    print("\nEnter products and quantities to order (e.g., 'MacBook Air M2, 1')."
+            "Type 'done' when finished.")
     while True:
         order_input = input("Enter product name and quantity (or 'done' to finish): ")
         if order_input.lower() == 'done':
@@ -95,6 +96,9 @@ def start(store):
             print("Invalid choice, please choose a valid option.")
 
 def main():
+    """
+    Initiates and starts the store interaction process.
+    """
     # Setup initial stock of inventory
     product_list = [
         Product("MacBook Air M2", price=1450, quantity=100),
@@ -107,4 +111,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
