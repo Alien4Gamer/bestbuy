@@ -102,6 +102,10 @@ class Store:
                 raise ValueError(f"Product {product.name} is no longer available.")
             if quantity <= 0:
                 raise ValueError("Quantity must be greater than zero.")
+            if product.get_quantity() < quantity:
+                raise ValueError(
+                    f"Not enough stock available for {product.name}. "
+                    f"Available: {product.get_quantity()}, Requested: {quantity}")
             try:
                 total_price += product.buy(quantity)
             except ValueError as error:

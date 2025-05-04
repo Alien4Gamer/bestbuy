@@ -66,6 +66,15 @@ class Product:
         """
         return self.quantity
 
+    def get_price(self):
+        """
+        Returns the current price of the product.
+
+        Returns:
+        float: The current price of the product.
+        """
+        return self.price
+
     def set_quantity(self, quantity):
         """
         Sets the quantity of the product and deactivates it if the quantity reaches zero.

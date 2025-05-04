@@ -36,37 +36,76 @@ def handle_total_quantity(store):
 
 def handle_order(store):
     """
-    Allows the user to make an order by entering product names and quantities.
+    Allows the user to place an order by selecting products and specifying quantities.
+    It checks product stock availability and updates the store's inventory accordingly.
+    After the user completes their selection, the total price of the order is calculated and displayed.
 
     Args:
-        store (Store): An instance of the Store class with available products.
+        store (Store): An instance of the Store class that holds the available products and inventory details.
     """
     shopping_list = []
-    print("\nEnter products and quantities to order (e.g., 'MacBook Air M2, 1')."
-            "Type 'done' when finished.")
-    while True:
-        order_input = input("Enter product name and quantity (or 'done' to finish): ")
-        if order_input.lower() == 'done':
-            break
-        try:
-            name, quantity = order_input.split(',')
-            quantity = int(quantity.strip())
-            # Find the product by name
-            product = next((product for product in store.get_all_products()
-                            if product.name.lower() == name.strip().lower()), None)
-            if product:
-                shopping_list.append((product, quantity))
-            else:
-                print(f"Product {name.strip()} not found.")
-        except ValueError:
-            print("Invalid input. Please enter in the format 'Product Name, Quantity'.")
+    stock_dict = {}
 
-    # Process the order
-    try:
-        total_price = store.order(shopping_list)
-        print(f"\nOrder successfully placed! Total price: ${total_price:.2f}")
-    except ValueError as error:
-        print(f"Error: {error}")
+    # Initialize the stock dictionary with both quantity and price
+    all_products = store.get_all_products()
+    for product in all_products:
+        stock_dict[product.name] = {
+            "quantity": product.get_quantity(),
+            "price": product.get_price()
+        }
+
+    print("\nWhen you want to finish the order, enter empty text.")
+
+    while True:
+        print("\nSelect a product and quantity:")
+
+        # Display products with their index, price, and quantity from the dictionary
+        for i, product in enumerate(all_products, 1):
+            product_id = product.name
+            quantity = stock_dict[product_id]["quantity"]
+            price = stock_dict[product_id]["price"]
+            print(f"{i}. {product.name}, Price: {price}, Quantity: {quantity}")
+
+        product_choice = input("\nWhich product # do you want? ").strip()
+        if product_choice == "":
+            break
+
+        try:
+            product_choice = int(product_choice) - 1  # Convert to zero-based index
+            if product_choice < 0 or product_choice >= len(all_products):
+                print("Error: Invalid product selection!")
+                continue
+            product = all_products[product_choice]
+            product_id = product.name
+
+            quantity = int(input("What amount do you want? ").strip())
+            if quantity <= 0:
+                print("Error: Quantity must be greater than zero.")
+                continue
+
+            # Check if enough stock is available using the stock_dict
+            if stock_dict[product_id]["quantity"] < quantity:
+                print("Error while making order! Quantity larger than what exists.")
+                continue
+
+            # Add to shopping list and update the stock dictionary
+            shopping_list.append((product, quantity))
+            stock_dict[product_id]["quantity"] -= quantity  # Update stock
+
+            print("Product added to list!")
+
+        except ValueError:
+            print("Error: Invalid input. Please enter valid product number and quantity.")
+
+    if shopping_list:
+        # Process the order
+        try:
+            total_price = store.order(shopping_list)
+            print(f"\nOrder successfully placed! Total price: ${total_price:.2f}")
+        except ValueError as error:
+            print(f"Error: {error}")
+    else:
+        print("No products selected for the order.")
 
 
 def start(store):
