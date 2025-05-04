@@ -13,8 +13,8 @@ class Product:
             self.quantity = quantity
             self.active = True  # Product is active by default
 
-        except ValueError as e:
-            print(f"Error: {e}")
+        except ValueError as error:
+            print(f"Error: {error}")
             self.name = None  # Assign None or some default value if initialization fails
             self.price = None
             self.quantity = None
