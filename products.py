@@ -37,25 +37,17 @@ class Product:
             If any input is invalid
             (name is empty or not a string, price is negative, or quantity is negative).
         """
-        try:
-            if not name or not isinstance(name, str):
-                raise ValueError("Name cannot be empty and must be a string.")
-            if not isinstance(price, (int, float)) or price < 0:
-                raise ValueError("Price must be a positive number.")
-            if not isinstance(quantity, int) or quantity < 0:
-                raise ValueError("Quantity must be a non-negative integer.")
+        if not name or not isinstance(name, str):
+            raise ValueError("Name cannot be empty and must be a string.")
+        if not isinstance(price, (int, float)) or price < 0:
+            raise ValueError("Price must be a positive number.")
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity must be a non-negative integer.")
 
-            self.name = name
-            self.price = price
-            self.quantity = quantity
-            self.active = True  # Product is active by default
-
-        except ValueError as error:
-            print(f"Error: {error}")
-            self.name = None  # Assign None or some default value if initialization fails
-            self.price = None
-            self.quantity = None
-            self.active = False
+        self.name = name
+        self.price = price
+        self.quantity = quantity
+        self.active = True  # Product is active by default
 
     def get_quantity(self):
         """
@@ -145,30 +137,5 @@ class Product:
             raise ValueError("Not enough stock available.")
 
         total_price = quantity * self.price
-        self.quantity -= quantity
-        if self.quantity == 0:
-            self.deactivate()
+        self.set_quantity(self.quantity - quantity)
         return total_price
-
-
-def test():
-    """
-    Main function to demonstrate the functionality of the Product class
-    by creating product instances, buying products, and displaying product details.
-    """
-    bose = Product("Bose QuietComfort Earbuds", price=250, quantity=500)
-    mac = Product("MacBook Air M2", price=1450, quantity=100)
-
-    print(bose.buy(50))
-    print(mac.buy(100))
-    print(mac.is_active())
-
-    bose.show()
-    mac.show()
-
-    bose.set_quantity(1000)
-    bose.show()
-
-
-if __name__ == '__main__':
-    test()

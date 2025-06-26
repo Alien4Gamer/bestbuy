@@ -12,7 +12,7 @@ def show_menu():
     print("4. Quit")
 
 
-def handle_product_list(store):
+def display_products(store):
     """
     Lists all available products in the store.
 
@@ -24,7 +24,7 @@ def handle_product_list(store):
         print(product.show())
 
 
-def handle_total_quantity(store):
+def display_total_quantity(store):
     """
     Displays the total quantity of products in the store.
 
@@ -123,9 +123,9 @@ def start(store):
         choice = input("Choose an option (1-4): ")
 
         if choice == "1":
-            handle_product_list(store)
+            display_products(store)
         elif choice == "2":
-            handle_total_quantity(store)
+            display_total_quantity(store)
         elif choice == "3":
             handle_order(store)
         elif choice == "4":
@@ -136,7 +136,11 @@ def start(store):
 
 def main():
     """
-    Initiates and starts the store interaction process.
+    This program simulates a Best Buy store where users can view, order products, and check inventory.
+
+    Initializes the store with a default set of products and starts the menu-driven interface.
+    This function acts as the entry point of the program, preparing a store instance
+    and launching user interaction through a command-line interface.
     """
     # Setup initial stock of inventory
     product_list = [

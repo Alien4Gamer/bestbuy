@@ -18,17 +18,22 @@ class Store:
         of products and quantities.
     """
 
-    def __init__(self, products=None):
+    def __init__(self, products):
         """
         Initializes a new Store instance with a list of products.
 
         Args:
-        products (list, optional): A list of Product instances.
-        Defaults to an empty list if not provided.
+        products (list): A list of Product instances.
+
+        Raises:
+        ValueError: If products is not a list, is empty, or contains non-Product instances.
         """
-        if products is None:
-            products = []
-        self.products = products  # List of products in the store
+        if not isinstance(products, list) or not products:
+            raise ValueError("Products must be a non-empty list of Product instances.")
+        if not all(isinstance(p, Product) for p in products):
+            raise ValueError("All items in the products list must be instances of Product.")
+
+        self.products = products
 
     def add_product(self, product):
         """
@@ -37,6 +42,8 @@ class Store:
         Args:
         product (Product): The product to add to the store.
         """
+        if any(p.name == product.name for p in self.products):
+            raise ValueError(f"Product '{product.name}' already exists in the store.")
         self.products.append(product)
 
     def remove_product(self, product):
@@ -49,10 +56,11 @@ class Store:
         Raises:
         ValueError: If the product is not found in the store.
         """
-        if product in self.products:
-            self.products.remove(product)
-        else:
-            raise ValueError(f"Product {product.name} not found in the store.")
+        for p in self.products:
+            if p.name == product.name:
+                self.products.remove(p)
+                return
+        raise ValueError(f"Product '{product.name}' not found in the store.")
 
     def get_total_quantity(self):
         """
@@ -61,11 +69,7 @@ class Store:
         Returns:
         int: The total quantity of active products.
         """
-        total = 0
-        for product in self.products:
-            if product.is_active():
-                total += product.get_quantity()
-        return total
+        return sum(product.get_quantity() for product in self.products if product.is_active())
 
     def get_all_products(self):
         """
@@ -111,35 +115,3 @@ class Store:
             except ValueError as error:
                 raise ValueError(f"Error while purchasing {product.name}: {error}") from error
         return total_price
-
-
-def test():
-    """
-    Main function to demonstrate the functionality of the Store and Product classes
-    by creating product instances, adding them to a store, processing an order,
-    and displaying the total price of the order.
-    """
-    # Create a list of products using the Product class
-    product_list = [
-        Product("MacBook Air M2", price=1450, quantity=100),
-        Product("Bose QuietComfort Earbuds", price=250, quantity=500),
-        Product("Google Pixel 7", price=500, quantity=250),
-    ]
-
-    # Create a Store instance with the product list
-    best_buy = Store(product_list)
-
-    # Get all active products in the store
-    products = best_buy.get_all_products()
-
-    # Print the total quantity of active products
-    print(f"Total quantity of active products: {best_buy.get_total_quantity()}")
-
-    # Create an order with specific quantities of products: Order 1 MacBook and 2 Bose earbuds
-    order_total = best_buy.order([(products[0], 1), (products[1], 2)])
-
-    print(f"Total order price: ${order_total}")
-
-
-if __name__ == '__main__':
-    test()
