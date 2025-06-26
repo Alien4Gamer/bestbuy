@@ -44,58 +44,46 @@ def handle_order(store):
         store (Store): An instance of the Store class that holds the available products and inventory details.
     """
     shopping_list = []
-    stock_dict = {}
-
-    # Initialize the stock dictionary with both quantity and price
-    all_products = store.get_all_products()
-    for product in all_products:
-        stock_dict[product.name] = {
-            "quantity": product.get_quantity(),
-            "price": product.get_price()
-        }
 
     print("\nWhen you want to finish the order, enter empty text.")
 
     while True:
-        print("\nSelect a product and quantity:")
-
-        # Display products with their index, price, and quantity from the dictionary
-        for i, product in enumerate(all_products, 1):
-            product_id = product.name
-            quantity = stock_dict[product_id]["quantity"]
-            price = stock_dict[product_id]["price"]
-            print(f"{i}. {product.name}, Price: {price}, Quantity: {quantity}")
+        # Use the display_products function to show the available products
+        display_products(store)
 
         product_choice = input("\nWhich product # do you want? ").strip()
         if product_choice == "":
             break
 
         try:
-            product_choice = int(product_choice) - 1  # Convert to zero-based index
+            # Convert product choice to zero-based index
+            product_choice = int(product_choice) - 1
+            all_products = store.get_all_products()
+
             if product_choice < 0 or product_choice >= len(all_products):
                 print("Error: Invalid product selection!")
                 continue
             product = all_products[product_choice]
-            product_id = product.name
 
             quantity = int(input("What amount do you want? ").strip())
             if quantity <= 0:
                 print("Error: Quantity must be greater than zero.")
                 continue
 
-            # Check if enough stock is available using the stock_dict
-            if stock_dict[product_id]["quantity"] < quantity:
+            # Check if enough stock is available
+            if product.get_quantity() < quantity:
                 print("Error while making order! Quantity larger than what exists.")
                 continue
 
-            # Add to shopping list and update the stock dictionary
+            # Add to shopping list and update the product's quantity
             shopping_list.append((product, quantity))
-            stock_dict[product_id]["quantity"] -= quantity  # Update stock
+            product.set_quantity(product.get_quantity() - quantity)  # Update stock
 
             print("Product added to list!")
 
         except ValueError:
             print("Error: Invalid input. Please enter valid product number and quantity.")
+
 
     if shopping_list:
         # Process the order
