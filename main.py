@@ -37,18 +37,13 @@ def display_total_quantity(store):
 def handle_order(store):
     """
     Allows the user to place an order by selecting products and specifying quantities.
-    It checks product stock availability and updates the store's inventory accordingly.
-    After the user completes their selection, the total price of the order is calculated and displayed.
-
-    Args:
-        store (Store): An instance of the Store class that holds the available products and inventory details.
+    It checks product stock availability and updates the store's inventory only after confirmation.
     """
     shopping_list = []
 
     print("\nWhen you want to finish the order, enter empty text.")
 
     while True:
-        # Use the display_products function to show the available products
         display_products(store)
 
         product_choice = input("\nWhich product # do you want? ").strip()
@@ -56,13 +51,13 @@ def handle_order(store):
             break
 
         try:
-            # Convert product choice to zero-based index
             product_choice = int(product_choice) - 1
             all_products = store.get_all_products()
 
             if product_choice < 0 or product_choice >= len(all_products):
                 print("Error: Invalid product selection!")
                 continue
+
             product = all_products[product_choice]
 
             quantity = int(input("What amount do you want? ").strip())
@@ -75,23 +70,19 @@ def handle_order(store):
                 print("Error while making order! Quantity larger than what exists.")
                 continue
 
-            # Add to shopping list and update the product's quantity
+            # Add to shopping list WITHOUT updating stock yet
             shopping_list.append((product, quantity))
-            product.set_quantity(product.get_quantity() - quantity)  # Update stock
-
             print("Product added to list!")
 
         except ValueError:
             print("Error: Invalid input. Please enter valid product number and quantity.")
 
-
     if shopping_list:
-        # Process the order
         try:
-            total_price = store.order(shopping_list)
+            total_price = store.order(shopping_list)  # This should handle quantity deduction internally
             print(f"\nOrder successfully placed! Total price: ${total_price:.2f}")
         except ValueError as error:
-            print(f"Error: {error}")
+            print(f"Error while placing order: {error}")
     else:
         print("No products selected for the order.")
 
